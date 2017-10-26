@@ -1,0 +1,70 @@
+﻿<Page
+    x:Class="PivotItemTest.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PivotItemTest"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core">
+    <Page.DataContext>
+        <local:MainPageViewModel/>
+    </Page.DataContext>
+    <Page.Resources>
+        <local:WaringConverter x:Key="converter"/>
+        <DataTemplate x:Key="AnswerListDataTemplate">
+            <Border Margin="5" BorderThickness="2" BorderBrush="White" Background="Transparent"
+                    DataContext="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=Content}">
+                <TextBlock 
+                    Margin="10" 
+                    FontSize="28" 
+                    TextWrapping="WrapWholeWords" 
+                    Text="{Binding Text}"
+                    Foreground="{Binding IsRightFlag, Converter={StaticResource converter}}"/>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="PivotQuestionDataTemplate">
+            <StackPanel Orientation="Vertical">
+                <TextBlock FontSize="28" Margin="20" TextWrapping="WrapWholeWords" Text="{Binding Text}"/>
+                <ListView Grid.Row="2" Margin="0,10" IsItemClickEnabled="True"                  
+                              ItemsSource="{Binding Answers}"  
+                              SelectedItem="{Binding SelectItem,Mode=TwoWay}"
+                              ItemTemplate="{StaticResource AnswerListDataTemplate}"
+                          >
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="ItemClick">
+                            <ic:InvokeCommandAction  Command="{Binding ItemCommand}" CommandParameter="{Binding}" />
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ListView>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="PivotHeaderDataTemplate">
+            <Border Padding="5" BorderThickness="2" BorderBrush="Gray" Background="{Binding IsCheck ,Converter={StaticResource converter},Mode=TwoWay}">
+                <TextBlock FontSize="24" >
+                    <Run x:Uid="QuestionsPage/QuestionNumber"/>
+                    <Run Text="{Binding QuestionNumber}"/>
+                </TextBlock>
+            </Border>
+        </DataTemplate>
+    </Page.Resources>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Margin="30,50,30,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Text=""/>
+            <Pivot Grid.Row="2"
+                   x:Name="pivotControl"
+                  
+                   ItemsSource="{Binding Questions}" 
+                   ItemTemplate="{StaticResource PivotQuestionDataTemplate}"
+                   HeaderTemplate="{StaticResource PivotHeaderDataTemplate}" 
+                   >
+            </Pivot>
+        </Grid>
+    </Grid>
+</Page>
